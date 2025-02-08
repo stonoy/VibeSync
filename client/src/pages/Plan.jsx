@@ -1,14 +1,15 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { customFetch } from '../utils'
 import { toast } from 'react-toastify'
 
 const Plan = () => {
   const [processing, setProssing] = useState(false)
   const [hasPaymentSucessful, setHasPaymentSuccessful] = useState(false)
+  const orderIdRef = useRef()
 
   const verifyPayment = async() => {
     try {
-      const resp = await customFetch.get("/payment/verify")
+      const resp = await customFetch.get(`/payment/verify/${orderIdRef.current}`)
 
       if (resp?.data?.paymentReceived == "successful"){
         setHasPaymentSuccessful(true)
@@ -29,7 +30,8 @@ const Plan = () => {
 
       const {amount, key, id, notes: {name, email, type}} = resp?.data
 
-      console.log(resp.data)
+      // set orderId for future use
+      orderIdRef.current = id
 
       const options = {
         key, // Replace with your Razorpay key_id

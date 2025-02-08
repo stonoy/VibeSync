@@ -10,6 +10,12 @@ const createOrder = async (req, res) => {
     const {type} = req.params
     const loggedInUser = req.user
 
+    // return if user is admin
+    if (loggedInUser.role == "admin"){
+        createError("No need for admin to pay", 400)
+        return
+    }
+
     if (!Object.keys(memberTypes).includes(type)){
         createError("invalid member type", 400)
         return
@@ -73,21 +79,24 @@ const checkWebhook = async (req, res) => {
     await thePayment.save()
 
     // update the user from payment
-    const theUser = await User.findById(thePayment.userId)
-    theUser.role = theUser.role == "admin" ? "admin" : type
-
-    await theUser.save()
+    await User.updateOne({_id: thePayment.userId}, 
+        {
+            $inc : {limit : type == "gold" ? 10 : 5},
+            $set : {role : type}
+        }
+    )
 
     res.status(200).json({msg : "ok"})
 }
 
 const verifyPayment = async(req, res) => {
     const loggedInUser = req.user
+    const {orderId} = req.params
 
-    const thePayment = await Payment.findOne({userId: loggedInUser._id, status: "successful"})
+    const thePayment = await Payment.findOne({userId: loggedInUser._id, orderId, status: "successful"})
 
 
-    res.status(200).json({paymentReceived: thePayment?.status})
+    res.status(200).json({paymentReceived: thePayment?.status == "successful" ? "successful" : "failed"})
 }
 
 

@@ -7,6 +7,6 @@ const payRoutes = express.Router()
 
 payRoutes.get("/initiate/:type",userAuth, createOrder)
 payRoutes.post("/webhook", checkWebhook)
-payRoutes.get("/verify", userAuth, verifyPayment)
+payRoutes.get("/verify/:orderId", userAuth, verifyPayment)
 
 module.exports = payRoutes
