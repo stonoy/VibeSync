@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 const Plan = () => {
   const [processing, setProssing] = useState(false)
   const [hasPaymentSucessful, setHasPaymentSuccessful] = useState(false)
-  const orderIdRef = useRef()
+  const orderIdRef = useRef(null)
 
   const verifyPayment = async() => {
     try {
