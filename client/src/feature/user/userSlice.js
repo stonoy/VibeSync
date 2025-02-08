@@ -12,7 +12,8 @@ const initialState = {
         age: 18,
         bio: "",
         interests: interestOptions
-    }
+    },
+    searchUsers: [],
 }
 
 export const loginUser = createAsyncThunk("user/login", 
@@ -75,6 +76,18 @@ export const getUser = createAsyncThunk("user/getUser",
        
         try {
             const resp = await customFetch.get("/user/getuser")
+            return resp?.data
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error?.response?.data?.msg)
+        }
+    }
+)
+
+export const getSearchUsers = createAsyncThunk("user/getSearchUsers", 
+    async (name, thunkAPI) => {
+       
+        try {
+            const resp = await customFetch.get(`/user/searchusers/${name}`)
             return resp?.data
         } catch (error) {
             return thunkAPI.rejectWithValue(error?.response?.data?.msg)
@@ -167,6 +180,16 @@ const userSlice = createSlice({
             state.user = payload?.theUser
             localStorage.setItem("user", JSON.stringify(state))
         }).addCase(getUser.rejected, (state, {payload}) => {
+            state.userLoading = false
+            toast.error(payload)
+        }).addCase(getSearchUsers.pending, (state, {payload}) => {
+            state.userLoading = true
+        }).addCase(getSearchUsers.fulfilled, (state, {payload}) => {
+            state.userLoading = false
+            // state.token = payload.token
+            state.searchUsers = payload?.users
+            localStorage.setItem("user", JSON.stringify(state))
+        }).addCase(getSearchUsers.rejected, (state, {payload}) => {
             state.userLoading = false
             toast.error(payload)
         })

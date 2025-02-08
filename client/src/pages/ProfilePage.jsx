@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { getUserSharedThoughts } from '../feature/thought/thoughtSlice'
 import { OtherProfile, Profile, Thought } from '../components'
 
@@ -9,11 +9,12 @@ const ProfilePage = () => {
     const {thoughtLoading, userSharedThoughts} = useSelector(state => state.thought)
     const dispatch = useDispatch()
     const {userId} = useParams()
+    // const navigate = useNavigate()
 
     useEffect(() => {
       
         dispatch(getUserSharedThoughts(userId))
-    },[])
+    },[userId])
   return (
     <div className='flex gap-2 md:gap-4'>
       {/* {profile} */}

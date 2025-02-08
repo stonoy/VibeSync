@@ -4,6 +4,7 @@ require("express-async-errors")
 require("dotenv").config()
 const cookieParser = require("cookie-parser")
 const { createServer } = require("http");
+const path = require("path")
 
 
 const connectDB = require("./config/database")
@@ -13,10 +14,12 @@ const thoughtRouter = require("./routes/thought_routes")
 const requestRouter = require("./routes/request_routes")
 const initiateSocket = require("./socket")
 const chat_router = require("./routes/chat_routes")
+const payRoutes = require("./routes/pay_routes")
 
 
 const app = express()
 
+app.use(express.static(path.resolve(__dirname, "./client/dist"))); // PROVIDING FRONTEND APP
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
@@ -28,7 +31,11 @@ app.use("/api/user", authRouter)
 app.use("/api/thought", thoughtRouter)
 app.use("/api/request", requestRouter)
 app.use("/api/chat", chat_router)
+app.use("/api/payment", payRoutes)
 
+app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "./client/dist", "index.html")); // SERVER GIVEING FRONTEND APP TO USERS
+  });
 
 app.use("*", (req, res) => {
     res.status(404).json({msg : "No such path found"})

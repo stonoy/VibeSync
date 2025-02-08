@@ -13,6 +13,30 @@ const initialState = {
     revealedThought: null
 }
 
+export const shareAthought = createAsyncThunk("thought/shareAthought",
+    async(thoughtId, thunkAPI) => {
+        
+        try {
+            const resp = await customFetch.patch(`thought/shareAthoughts/${thoughtId}`)
+            return resp?.data?.msg
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error?.response?.data?.msg)
+        }
+    }
+)
+
+export const handleLike = createAsyncThunk("thought/handleLike",
+    async(thoughtId, thunkAPI) => {
+        
+        try {
+            const resp = await customFetch.post(`thought/likeAthought/${thoughtId}`)
+            return resp?.data?.msg
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error?.response?.data?.msg)
+        }
+    }
+)
+
 export const makeThought = createAsyncThunk("thought/makeThought",
     async(data, thunkAPI) => {
         
@@ -139,6 +163,22 @@ const thoughtSlice = createSlice({
             localStorage.setItem("thought", JSON.stringify(state))
         }).addCase(revealThought.rejected, (state, {payload}) => {
             state.thoughtLoading = false
+            toast.error(payload)
+        }).addCase(handleLike.pending, (state, {payload}) => {
+            state.thoughtSubmitting = true
+        }).addCase(handleLike.fulfilled, (state, {payload}) => {
+            state.thoughtSubmitting = false
+            toast.success(payload)
+        }).addCase(handleLike.rejected, (state, {payload}) => {
+            state.thoughtSubmitting = false
+            toast.error(payload)
+        }).addCase(shareAthought.pending, (state, {payload}) => {
+            state.thoughtSubmitting = true
+        }).addCase(shareAthought.fulfilled, (state, {payload}) => {
+            state.thoughtSubmitting = false
+            toast.success(payload)
+        }).addCase(shareAthought.rejected, (state, {payload}) => {
+            state.thoughtSubmitting = false
             toast.error(payload)
         })
     }

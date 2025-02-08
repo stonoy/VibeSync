@@ -19,7 +19,7 @@ const initiateSocket = (server) => {
         socket.on("connectSocket", async ({userId}) => {
             // check if the user is already in db then delete it
             const onlineUser = await OnlineUser.findOne({userId})
-            console.log("connects")
+            // console.log("connects")
 
             if (onlineUser){
                 // delete old record
@@ -61,7 +61,7 @@ const initiateSocket = (server) => {
             const roomId = provideRoomId(toUserId, fromUserId)
             // check room 
             socket.join(roomId)
-            console.log("room  ", roomId)
+            // console.log("room  ", roomId)
         })
 
         socket.on("sendMessage", async ({toUserId, fromUserId, text, chatId}) => {

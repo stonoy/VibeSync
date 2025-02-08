@@ -18,7 +18,7 @@ const Vibes = () => {
             !thoughtLoading ? 
             <>
               {
-                vibes?.map(thought => <Thought key={thought._id} {...thought} isReveal={true}/>)
+                vibes?.map(thought => <Thought key={thought._id} {...thought} isReveal={true} isShare={true}/>)
               }
             </>
             :

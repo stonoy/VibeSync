@@ -144,4 +144,24 @@ const getUser = async (req, res) => {
     res.status(200).json({theUser})
 }
 
-module.exports = {register,login,logout,setProfile, getProfile, getLastSeen,getUser}
+const searchUsers = async (req, res) => {
+    const {name} = req.params
+
+    if (!name){
+        createError("search name should be provided", 400)
+        return
+    }
+
+    let users = await User.find({name : {$regex: name, $options: "i"}}).limit(10).lean()
+
+    users = users.map(user => {
+        return {
+            _id: user._id,
+            name: user.name
+        }
+    })
+
+    res.status(200).json({users})
+}
+
+module.exports = {register,login,logout,setProfile, getProfile, getLastSeen,getUser, searchUsers}

@@ -109,7 +109,7 @@ const ChatBox = () => {
       <div className="flex-1 overflow-scroll p-5">
         {/* chat messages here */}
         {theChat?.messages?.map((msg, index) => {
-          console.log(msg)
+          // console.log(msg)
           const {sender, text, seen} = msg
           return (
             <div
