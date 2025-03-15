@@ -16,7 +16,7 @@ const Friend = ({_id, name, role, avater,bio,fromUserId, isReview, fullPage}) =>
   }
 
   return (
-    <div className={`${fullPage && "flex justify-between items-center gap-2"} bg-base-200 shadow-lg m-2 rounded-md`}>
+    <div className={`${fullPage && "flex justify-between items-center gap-2"} w-64 bg-base-200 shadow-lg m-2 rounded-md md:w-96`}>
         <div>
         <Link to={`/profile/${_id}`} className="block">
         <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">

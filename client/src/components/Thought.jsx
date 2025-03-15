@@ -19,7 +19,7 @@ const Thought = ({createdAt,_id, text,fromUserId, toUserId, shared, likes, revea
   }
 
   return (
-    <div className="card  w-96 shadow-xl m-4 p-4 bg-neutral">
+    <div className="card w-64 shadow-xl m-4 p-4 bg-neutral md:w-96">
       {fromUserId && <div className='flex items-center'>
               <Link to={`/profile/${fromUserId?._id || fromUserId }`} tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar inline-block">
                       <div className={`w-10 rounded-full border-4 ${roles[fromUserId?.role]}`}>

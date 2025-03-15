@@ -21,7 +21,7 @@ const FriendAccepted = ({_id, name, role, bio, avater}) => {
 
   const isOnline = onlineFriendId.includes(_id)
   return (
-    <div className={`flex justify-between items-center gap-2 bg-base-200 shadow-lg m-2 rounded-md`}>
+    <div className={`flex w-64 justify-between items-center gap-2 bg-base-200 shadow-lg m-2 rounded-md md:w-96`}>
         <div>
         <Link to={`/profile/${_id}`} className="block">
         <div className='flex gap-1 items-center'>

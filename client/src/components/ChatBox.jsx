@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { getLastSeen, getTheChat, msgReceiveViaSocket, removeMeFromChatActive } from '../feature/chat/chatSlice'
+import { getChatHeads, getLastSeen, getTheChat, msgReceiveViaSocket, removeMeFromChatActive } from '../feature/chat/chatSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom'
 import { GoDotFill } from 'react-icons/go'
@@ -7,15 +7,17 @@ import { toast } from 'react-toastify'
 import moment from "moment"
 
 const ChatBox = () => {
-  // const [text, setText] = useState("")
+  const [isTyping, setIsTyping] = useState(false)
   const textRef = useRef(null)
+  const bottomRef = useRef(null)
+  const chatBoxRef = useRef(null)
   const {chatLoading, theChat, lastSeen, chatSubmitting} = useSelector(state => state.chat)
   const {user} = useSelector(state => state.user)
   const dispatch = useDispatch()
   const {chatId} = useParams()
   const {socket,onlineFriendId}= useOutletContext()
   const [busy, setBusy] = useState(false)
-  const bottomRef = useRef()
+  
 
   const participants = theChat?.participants
   const messages = theChat?.messages
@@ -23,12 +25,18 @@ const ChatBox = () => {
   const userId = recipientUser?._id
   const isOnline = onlineFriendId.includes(userId)
 
-
+  // console.log(chatId)
 
   useEffect(() => {
     dispatch(getTheChat(chatId)).then(({payload}) => {
-      // when page render scroll bottom of the messages
+      
+      // get the chat heads
+      dispatch(getChatHeads()).then(() => {
+        // when page render scroll bottom of the messages
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+      })
+
+      
 
       const participantsI = payload?.theChat?.participants
   
@@ -48,11 +56,24 @@ const ChatBox = () => {
           dispatch(msgReceiveViaSocket({chatId, newMsg}))
           setBusy(false)
           // when page render scroll bottom of the messages
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+        chatBoxRef.current?.classList.add("border-4", "border-blue-500", "animate-pulse", "duration-1000")
+
+        setTimeout(() => {
+          chatBoxRef.current?.classList.remove("border-4", "border-blue-500", "animate-pulse", "duration-1000")
+        },1000)
         });
+
+        socket.on("send_show_typing", ({chatId:chatIdReceived, fromUserId}) => {
+          
+          if (user._id != fromUserId && chatId == chatIdReceived){
+            setIsTyping(true)
+
+            setTimeout(() => {setIsTyping(false)}, 1500)
+          }
+        })
   
         socket.on("receiveError", () => {
-          
+          // do it later...
         })
       }
   
@@ -67,6 +88,7 @@ const ChatBox = () => {
       if (socket){
         socket.off("receiveMessage")
       socket.off("receiveError")
+      socket.off("send_show_typing")
       }
     }
 
@@ -75,8 +97,8 @@ const ChatBox = () => {
 
 
   // useEffect(() => {
-    
-  // }, [chatId, socket])
+   
+  // }, [])
 
   if (chatLoading){
     return <h1>Loading...</h1>
@@ -95,9 +117,13 @@ const ChatBox = () => {
       socket.emit("sendMessage", ({toUserId: userId, fromUserId: user?._id, text, chatId}))
       setBusy(true)
     }
+
+    textRef.current.value = ""
   }
 
- 
+ const handleShowTyping = () => {
+  socket.emit("show_typing", ({toUserId: userId, fromUserId: user?._id, chatId}))
+ }
 
   return (
     <div className="w-3/4 mx-auto border border-gray-600 m-5 h-[70vh] flex flex-col">
@@ -105,8 +131,9 @@ const ChatBox = () => {
       <h1 className="">{recipientUser?.name}</h1>
       {isOnline ? <GoDotFill className='text-green-500 ' /> : lastSeen ? <span>{moment(lastSeen).format('MMMM Do YYYY, h:mm:ss a')}</span> : ""}
       {(!isOnline && !lastSeen) && <button disabled={chatSubmitting} className='p-1' onClick={() => dispatch(getLastSeen(userId))}>last seen</button>}
+      {isTyping && <span className='p-1 rounded-lg text-white bg-green-700'>typing...</span>}
       </div>
-      <div className="flex-1 overflow-scroll p-5">
+      <div ref={chatBoxRef} className="flex-1 overflow-y-auto p-5">
         {/* chat messages here */}
         {theChat?.messages?.map((msg, index) => {
           // console.log(msg)
@@ -116,7 +143,7 @@ const ChatBox = () => {
               key={index}
               className={
                 "chat " +
-                (sender != user?._id ? "chat-end" : "chat-start")
+                (sender == user?._id ? "chat-end" : "chat-start")
               }
             >
               <div className="chat-header">
@@ -128,14 +155,23 @@ const ChatBox = () => {
             </div>
           );
         })}
+        {/*
+        moved to top ->
+        {isTyping && (
+          <div className="chat chat-start">
+            <div className="chat-bubble bg-success text-base-content opacity-50">
+              typing...
+            </div>
+          </div>
+        )} */}
         <div ref={bottomRef}></div>
       </div>
-      <div className="p-5 border-t border-gray-600 flex items-center gap-2">
+      <div className="p-2 border-t border-gray-600 flex items-center gap-1 md:p-4 md:gap-2">
         <input
           // value={text}
-          // onChange={(e) => setText(e.target.value)}
+          onChange={handleShowTyping}
           ref={textRef}
-          className="flex-1 border border-gray-500 text-white rounded p-2"
+          className=" border w-full border-gray-500 text-white rounded p-2 md:flex-1"
         ></input>
         <button disabled={busy} onClick={handleSendMsg} className="btn btn-secondary">
           Send

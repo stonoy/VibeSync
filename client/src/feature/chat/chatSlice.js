@@ -64,7 +64,7 @@ const chatSlice = createSlice({
     reducers: {
         msgReceiveViaSocket: (state, {payload}) => {
             const {chatId, newMsg} = payload
-            console.log(chatId, newMsg)
+            
             // search in the chatHeads and update the last message
             state.chatHeads =  state.chatHeads.map(head => {
                 if (head.chatId == chatId){

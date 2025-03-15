@@ -40,7 +40,7 @@ const Register = () => {
         <FormInput name="name" label="Name" type="text" isRequired={true} />
         <FormInput name="email" label="Email" type="text" isRequired={true} />
         <FormInput name="password" label="Password" type="password" isRequired={true} />
-        <button className='btn btn-ghost'>
+        <button className='btn btn-ghost' disabled={userSubmitting}>
                   {
                           userSubmitting ? 
                           <span className='flex gap-1 items-center'>

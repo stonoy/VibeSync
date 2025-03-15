@@ -100,7 +100,7 @@ const userSlice = createSlice({
     initialState: JSON.parse(localStorage.getItem("user")) || initialState,
     reducers: {
         logout: (state, action) => {
-            console.log("logout")
+            
             localStorage.clear()
             return initialState
         },

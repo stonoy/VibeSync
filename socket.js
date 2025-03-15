@@ -113,6 +113,38 @@ const initiateSocket = (server) => {
             io.to(roomId).emit("receiveMessage", ({chatId, newMsg}))
         })
 
+        socket.on("show_typing", async ({toUserId, fromUserId, chatId}) => {
+            const roomId = provideRoomId(toUserId, fromUserId)
+
+            // get the chat check if block or not
+            const theChat = await Chat.findById(chatId)
+
+            if (!theChat){
+                io.to(roomId).emit("receiveError", "invalid chat")
+                return
+            }
+
+            if (theChat.status == "blocked"){
+                io.to(roomId).emit("receiveError", "chat blocked")
+                return
+            }
+
+            // check both user are friends or not
+            const isFriend = await Request.findOne({$or:[
+                {fromUserId, toUserId, status: "accepted"},
+                {fromUserId: toUserId, toUserId: fromUserId, status: "accepted"}
+            ]})
+
+            if (!isFriend){
+                io.to(roomId).emit("receiveError", "both users are not friend")
+                return
+            }
+
+            // send show typing to the room
+            io.to(roomId).emit("send_show_typing", ({chatId, fromUserId}))
+
+        })
+
         socket.on("disconnect", async () => {
             // search the online user with socket.id
             // console.log(userId)

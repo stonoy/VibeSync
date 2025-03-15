@@ -21,7 +21,7 @@ const HomeLayOut = () => {
 
   useEffect(() => {
     const newSocket = startSocketConnection()
-    console.log("isLoggedIn")
+    
     if (!isLoggedIn){
       navigate("/login")
     } else {
@@ -73,7 +73,7 @@ const HomeLayOut = () => {
     
       <main>
       <Header/>
-      <section className='container mx-auto p-4 md:p-6'>
+      <section className='max-w-4xl mx-auto p-4 md:p-6'>
         <Outlet context={{socket, onlineFriendId}}/>
       </section>
     </main>

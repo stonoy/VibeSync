@@ -11,7 +11,7 @@ const ChatHead = () => {
   const {chatId} = useParams()
 
   useEffect(() => {
-    dispatch(getChatHeads())
+    // dispatch(getChatHeads())
   },[chatId])
 
   if (chatLoading){

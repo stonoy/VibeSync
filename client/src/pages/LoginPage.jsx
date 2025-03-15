@@ -20,6 +20,7 @@ const LoginPage = () => {
         // console.log(data)
         dispatch(loginUser(data)).then(({type}) => {
           if (type == "user/login/fulfilled"){
+            
             navigate("/")
           }
         })
@@ -38,7 +39,7 @@ const LoginPage = () => {
       <form ref={formRef} onSubmit={handleSubmit} className="card-body">
         <FormInput name="email" label="Email" type="text" isRequired={true} />
         <FormInput name="password" label="Password" type="password" isRequired={true} />
-        <button className='btn btn-ghost'>
+        <button className='btn btn-ghost' disabled={userSubmitting}>
                           {
                                   userSubmitting ? 
                                   <span className='flex gap-1 items-center'>

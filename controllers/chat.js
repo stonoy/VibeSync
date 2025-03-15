@@ -82,7 +82,9 @@ const getTheChat = async(req, res) => {
         return msg
     })
 
-
+    if (theChat?.lastMessage && theChat?.lastMessage?.sender.toString() != loggedInUserId.toString()){
+        theChat.lastMessage.seen = true
+    }
 
     await theChat.save()
 

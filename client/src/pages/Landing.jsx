@@ -20,7 +20,7 @@ const Landing = () => {
   },[])
 
   return (
-    <div className='flex gap-2 md:gap-4'>
+    <div className='flex flex-col gap-2 md:gap-4 md:flex-row'>
       {/* {profile} */}
       <Profile/>
       <div className='border-x-2 border-slate-500 min-h-screen'>
