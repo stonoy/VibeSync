@@ -23,14 +23,15 @@ const Landing = () => {
     <div className='flex flex-col gap-2 md:gap-4 md:flex-row'>
       {/* {profile} */}
       <Profile/>
+      <div className='flex flex-col-reverse gap-2 md:gap-4 md:flex-row'>
       <div className='border-x-2 border-slate-500 min-h-screen'>
           {
             !thoughtLoading ? 
-            <>
+            <div >
               {
                 friendsSharedThoughts?.map(thought => <Thought key={thought._id} {...thought} />)
               }
-            </>
+            </div>
             :
             <h1>Loading...</h1>
           }
@@ -38,14 +39,15 @@ const Landing = () => {
       <div>
           {
             !friendLoading ?
-            <>
+            <div className='flex flex-row overflow-x-auto md:flex-col'>
               {
                 suggestions?.map(suggestion => <Friend key={suggestion._id} {...suggestion} isReview={false} fullPage={false} />)
               }
-            </>
+            </div>
             :
             <h1>Loading...</h1>
           }
+      </div>
       </div>
     </div>
   )
